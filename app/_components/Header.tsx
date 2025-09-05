@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import React from 'react'
 import Link from 'next/link'
+import { SignInButton } from '@clerk/nextjs'
 
 const menuOptions = [
   { name: 'Home', path: '/' },
@@ -27,9 +28,11 @@ function Header() {
         </div>
 
         {/* Get Started Button */}
-        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition">
-        Get Started
-        </button>
+        <SignInButton mode='modal'>
+          <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition">
+          Get Started
+          </button> 
+        </SignInButton>
     </div>
   )
 }

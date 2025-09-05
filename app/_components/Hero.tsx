@@ -1,8 +1,11 @@
+"use client"
 import React, { useEffect } from 'react'
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Send, Globe2, Lightbulb, Map, Mountain, ArrowDown } from "lucide-react"
 import HeroVideoDialog from "@/components/magicui/hero-video-dialog"
+import { useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 
 
 const suggestions=[
@@ -25,6 +28,20 @@ const suggestions=[
 ]
 
 function Hero() {
+
+    const { user } = useUser();
+
+    const router = useRouter();
+
+    const onSend = () => {
+        if (!user)
+        {
+            router.push('/sign-in');
+            return ;
+        }
+        //Navigate to Create Trip Planner Web Page
+    }
+
     return (
         <div className='mt-24 w-full flex justify-center'>
             <div className='max-w-3xl w-full text-center space-y-8'>
@@ -44,7 +61,7 @@ function Hero() {
                         placeholder='Plan a weekend in Rome'
                         className='w-full h-28 bg-transparent border-none focus-visible:ring-0 shadow-none resize-none'
                     />
-                    <Button size={'icon'} className="self-end flex items-center gap-2">
+                    <Button size={'icon'} className="self-end flex items-center gap-2" onClick={() => onSend()}>
                         <Send className="w-5 h-5" />
                     </Button>
                 </div>
