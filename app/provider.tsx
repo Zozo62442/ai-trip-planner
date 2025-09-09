@@ -1,13 +1,49 @@
-import React from "react";
+"use client"
+import React, { use, useContext } from "react";
 import Header from "./_components/Header";
+import { useUser } from "@clerk/nextjs";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useEffect } from "react";
+import { User } from "lucide-react";
 
-function Provider({ children }: { children: React.ReactNode }) {
+function Provider({ children }: Readonly<{ children: React.ReactNode }>) {
+
+  const { user } = useUser();
+
+  const CreateUser = useMutation(api.user.CreateNewUser);
+  const [userDetail, setUserDetail] = React.useState<any>();
+  const CreateNewUser = async() => {
+    if (user) {
+      // Save New User if Not Exist
+      const result = await CreateUser(
+        {
+          name: user?.fullName ?? '',
+          email: user?.primaryEmailAddress?.emailAddress ?? '',
+          imageUrl: user?.imageUrl,
+        }
+      )
+      setUserDetail(result);
+    }
+  };
+
+  useEffect(() => {
+    user && CreateNewUser();
+  }, [user]);
+
   return (
-    <div>
-      <Header />
-      {children}
-    </div>
+    <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+      <div>
+        <Header />
+        {children}
+      </div>
+    </UserDetailContext.Provider>
   );
 }
 
 export default Provider;
+
+export const userDetailContext = () => {
+  return useContext(UserDetailContext);
+};
+
