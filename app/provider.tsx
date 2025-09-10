@@ -6,6 +6,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect } from "react";
 import { User } from "lucide-react";
+import { UserDetailContext } from "../context/UserDetailContext";
 
 function Provider({ children }: Readonly<{ children: React.ReactNode }>) {
 
