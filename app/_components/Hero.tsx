@@ -40,6 +40,7 @@ function Hero() {
             return ;
         }
         //Navigate to Create Trip Planner Web Page
+        router.push('/create-new-trip');
     }
 
     return (
@@ -56,15 +57,18 @@ function Hero() {
                 </div>
 
                 {/* Input Box */}
-                <div className='border rounded-2xl p-4 bg-card shadow-md flex flex-col gap-4'>
-                    <Textarea
-                        placeholder='Plan a weekend in Rome'
-                        className='w-full h-28 bg-transparent border-none focus-visible:ring-0 shadow-none resize-none'
-                    />
-                    <Button size={'icon'} className="self-end flex items-center gap-2" onClick={() => onSend()}>
-                        <Send className="w-5 h-5" />
-                    </Button>
+                <div> 
+                    <div className='border rounded-2xl p-4 bg-card shadow-md flex flex-col gap-4'>
+                        <Textarea
+                            placeholder='Plan a weekend in Rome'
+                            className='w-full h-28 bg-transparent border-none focus-visible:ring-0 shadow-none resize-none'
+                        />
+                        <Button size={'icon'} className="self-end flex items-center gap-2" onClick={() => onSend()}>
+                            <Send className="w-5 h-5" />
+                        </Button>
+                    </div>
                 </div>
+                
                 {/* Suggestion list */} 
                 <div className='flex gap-5'>
                     {suggestions.map((suggestion, index) => (
