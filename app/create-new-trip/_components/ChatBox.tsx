@@ -6,18 +6,24 @@ import { Loader, Send } from 'lucide-react'
 import React from 'react'
 import { useState } from 'react'
 import EmptyBoxState from './EmptyBoxState'
+import GroupSizeUi from './GroupSizeUi'
+import BudgetUi from './BudgetUi'
+import FinalUi from './FinalUi'
+import SelectDays from './SelectDays'
+import { useEffect } from 'react'
 
 type Message = {
     role: string,
     content: string
+    ui?: string,
 }
 
 function ChatBox() {
 
     const [messages, setMessages] = React.useState<Message[]>([]);
-
     const [userInput, setUserInput] = React.useState<string>();
     const [loading, setLoading] = useState(false);
+    const [isFinal, setIsFinal] = useState(false);
     const onSend = async () => {
 
         if (!userInput?.trim()) return ;
@@ -34,11 +40,41 @@ function ChatBox() {
         });
         setMessages((prev:Message[])=>[...prev, {
             role: 'assistant',
-            content: result?.data?.resp
+            content: result?.data?.resp,
+            ui: result?.data?.ui
         }]);
         console.log(result.data);
         setLoading(false);
     }
+
+    const RenderGenerativeUi = (ui:string) => {
+        if(ui=='budget')
+        {
+            // Render Budget Component
+            return <BudgetUi onSelectedOption={(v:string) => {setUserInput(v); onSend()}}/>;
+        } else if(ui=='groupSize')
+        {
+            // Render Group Size Component
+            return <GroupSizeUi onSelectedOption={(v:string) => {setUserInput(v); onSend()}}/>;
+        } else if (ui == 'tripDuration')
+        {
+            // Render Select Number of Days Component
+            return <SelectDays onSelectedOption={(v:string) => {setUserInput(v); onSend()}}/>;
+        } else if (ui == 'final')
+        {
+            // Render Final Component
+            return <FinalUi viewTrip={() => console.log()}/>;
+        }
+        return null
+    }
+
+    useEffect (() => {
+        const lastMsg=messages[messages.length-1];
+        if(lastMsg?.ui=='final')
+        {
+            setIsFinal(true);
+        }
+    }, [messages]);
 
     return (
         <div className='h-[85vh] flex flex-col'>
@@ -57,6 +93,7 @@ function ChatBox() {
                         <div className='flex justify-start mt-2' key={index}>
                             <div className='max-w-lg bg-gray-100 text-gray-800 px-4 py-2 rounded-lg'>
                                 {msg.content}
+                                {RenderGenerativeUi(msg.ui ?? "")}
                             </div>
                         </div>
                 ))}
