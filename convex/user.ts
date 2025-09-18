@@ -21,9 +21,11 @@ export const createUser = mutation({
             };
             
             //If Not create New User
-            const result=await ctx.db.insert('UserTable', userData);
+            // Insert and capture the ID
+            const id = await ctx.db.insert('UserTable', userData);
             return userData;
         }
+         // Existing users already have _id
         return user[0];
-    }
+    },
 });

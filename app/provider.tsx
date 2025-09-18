@@ -12,7 +12,7 @@ function Provider({ children }: Readonly<{ children: React.ReactNode }>) {
 
   const { user } = useUser();
 
-  const CreateUser = useMutation(api.user.CreateNewUser);
+  const CreateUser = useMutation(api.user.createUser);
   const [userDetail, setUserDetail] = React.useState<any>();
   const CreateNewUser = async() => {
     if (user) {
@@ -44,7 +44,7 @@ function Provider({ children }: Readonly<{ children: React.ReactNode }>) {
 
 export default Provider;
 
-export const userDetailContext = () => {
+export const useUserDetail = () => {
   return useContext(UserDetailContext);
 };
 

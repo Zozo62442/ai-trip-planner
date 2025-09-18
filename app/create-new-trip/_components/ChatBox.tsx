@@ -11,6 +11,10 @@ import BudgetUi from './BudgetUi'
 import FinalUi from './FinalUi'
 import SelectDays from './SelectDays'
 import { useEffect } from 'react'
+import { useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import { useUserDetail } from "@/app/provider";
+import { v4 as uuidv4 } from 'uuid';
 
 type Message = {
     role: string,
@@ -34,9 +38,12 @@ function ChatBox() {
     const [userInput, setUserInput] = React.useState<string>();
     const [loading, setLoading] = useState(false);
     const [isFinal, setIsFinal] = useState(false);
-    const [tripDetails, setTripDetails] = useState<TripInfo>();
+    const [tripDetail, setTripDetail] = useState<TripInfo>();
+    const SaveTripDetail = useMutation(api.tripDetail.CreateTripDetail);
+    const {userDetail, setUserDetail} = useUserDetail();
+
     const onSend = async () => {
-        console.log("INSIDE");
+
         if (!userInput?.trim()) return ;
         setLoading(true);
 
@@ -63,7 +70,14 @@ function ChatBox() {
         }]);
 
         if (isFinal) {
-            setTripDetails(result?.data?.trip_plan)
+            setTripDetail(result?.data?.trip_plan);
+            const tripId = uuidv4();
+            await SaveTripDetail({
+                tripDetail: result?.data?.trip_plan,
+                tripId: tripId,
+                uid: userDetail?._id
+            });
+            console.log("Trip Detail Saved: ", result);
         }
         setLoading(false);
     }
@@ -85,7 +99,7 @@ function ChatBox() {
         {
             // Render Final Component
             return <FinalUi viewTrip={() => console.log()}
-            disable={!tripDetails}
+            disable={!tripDetail}
             />;
         }
         return null
