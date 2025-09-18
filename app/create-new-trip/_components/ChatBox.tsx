@@ -18,32 +18,53 @@ type Message = {
     ui?: string,
 }
 
+type TripInfo = {
+    budget: string,
+    destination: string,
+    duration: string,
+    group_size: string,
+    hotels: any[],
+    itinerary: any[],
+    origin: string,
+}
+
 function ChatBox() {
 
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [userInput, setUserInput] = React.useState<string>();
     const [loading, setLoading] = useState(false);
     const [isFinal, setIsFinal] = useState(false);
+    const [tripDetails, setTripDetails] = useState<TripInfo>();
     const onSend = async () => {
-
+        console.log("INSIDE");
         if (!userInput?.trim()) return ;
         setLoading(true);
-        setUserInput("");
+
         const newMsg:Message = {
             role: 'user',
-            content: userInput
+            content: userInput ?? ''
         };
+        setUserInput("");
+        console.log("HERE");
+        
         setMessages((prev:Message[])=>[...prev, newMsg]);
 
         const result=await axios.post('/api/aimodel', {
-            messages: [...messages, newMsg]
+            messages: [...messages, newMsg],
+            isFinal: isFinal
         });
-        setMessages((prev:Message[])=>[...prev, {
+
+        console.log("TRIP", result.data);
+
+        !isFinal && setMessages((prev:Message[])=>[...prev, {
             role: 'assistant',
             content: result?.data?.resp,
             ui: result?.data?.ui
         }]);
-        console.log(result.data);
+
+        if (isFinal) {
+            setTripDetails(result?.data?.trip_plan)
+        }
         setLoading(false);
     }
 
@@ -63,7 +84,9 @@ function ChatBox() {
         } else if (ui == 'final')
         {
             // Render Final Component
-            return <FinalUi viewTrip={() => console.log()}/>;
+            return <FinalUi viewTrip={() => console.log()}
+            disable={!tripDetails}
+            />;
         }
         return null
     }
@@ -73,8 +96,15 @@ function ChatBox() {
         if(lastMsg?.ui=='final')
         {
             setIsFinal(true);
+            setUserInput('Fantastic! Please proceed to plan my trip.');
         }
     }, [messages]);
+
+    useEffect(() => {
+        if (isFinal && userInput) {
+            onSend();
+        }
+    }, [isFinal]);
 
     return (
         <div className='h-[85vh] flex flex-col'>
