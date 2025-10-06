@@ -1,5 +1,5 @@
 "use client"
-import React, { use, useContext } from "react";
+import React, { useState, useContext } from "react";
 import Header from "./_components/Header";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
@@ -7,13 +7,18 @@ import { api } from "@/convex/_generated/api";
 import { useEffect } from "react";
 import { User } from "lucide-react";
 import { UserDetailContext } from "../context/UserDetailContext";
+import { TripDetailContext } from "../context/TripDetailContext";
+import { TripInfo } from "./create-new-trip/_components/ChatBox";
+
 
 function Provider({ children }: Readonly<{ children: React.ReactNode }>) {
 
   const { user } = useUser();
 
   const CreateUser = useMutation(api.user.createUser);
-  const [userDetail, setUserDetail] = React.useState<any>();
+  const [userDetail, setUserDetail] = useState<any>();
+  const [tripDetailInfo, setTripDetailInfo] = useState<TripInfo | null>(null);
+
   const CreateNewUser = async() => {
     if (user) {
       // Save New User if Not Exist
@@ -34,10 +39,12 @@ function Provider({ children }: Readonly<{ children: React.ReactNode }>) {
 
   return (
     <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+      <TripDetailContext.Provider value={{ tripDetailInfo, setTripDetailInfo }}>
       <div>
         <Header />
         {children}
       </div>
+      </TripDetailContext.Provider>
     </UserDetailContext.Provider>
   );
 }
@@ -48,3 +55,6 @@ export const useUserDetail = () => {
   return useContext(UserDetailContext);
 };
 
+export const useTripDetail = (): TripContextType | undefined  => {
+  return useContext(TripDetailContext);
+}
