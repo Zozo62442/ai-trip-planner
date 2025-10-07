@@ -7,6 +7,7 @@ import { useTripDetail } from '@/app/provider';
 import { TripInfo } from './ChatBox';
 import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image'
 
 const TRIP_DATA = {
         "destination": "Paris",
@@ -206,7 +207,7 @@ function Itinerary() {
       {tripData ? <Timeline data={data} tripData={tripData} />
       : 
         <div>
-            <h2 className='flex gap-2 items-center absolute bottom-20 text-3xl text-white left-15' > <ArrowLeft /> Getting to know you to build your perfect trip here ... </h2>
+            <h2 className='flex gap-2 items-center absolute bottom-30 text-3xl text-white left-15' > <ArrowLeft /> Getting to know you to build your perfect trip here ... </h2>
 
             <Image src={'/travel.png'} alt="Travel" width={800} height={800} className='w-full h-full object-cover rounded-3xl' />
         </div>

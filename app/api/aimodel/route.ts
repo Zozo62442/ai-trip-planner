@@ -1,6 +1,11 @@
 import { NextRequest } from 'next/server';
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
+import { aj } from '../arcjet/route';
+import { currentUser } from '@clerk/nextjs/server';
+
+console.log("Loaded OpenRouter key:", process.env.OPENROUTER_API_KEY?.slice(0, 12) + "...");
+
 
 export const openai = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
@@ -90,10 +95,20 @@ Hotel address, Price, hotel image url, geo coordinates, rating, descriptions and
 
 export async function POST(req: NextRequest) {
     const { messages, isFinal } = await req.json();
+    const user = await currentUser();
+    const decision = await aj.protect(req, { userId:user?.primaryEmailAddress?.emailAddress??'', requested: isFinal ? 5 : 0 }); // Deduct 5 tokens from the bucket
+
+    console.log(decision);
+    if(decision?.reason?.remaining == 0) {
+        return NextResponse.json({ 
+          Response: "You have exhausted your free credits. Please upgrade to continue using the service." }, 
+          ui: 'limit' 
+        );
+    }
 
     try {
         const completion = await openai.chat.completions.create({
-            model: 'openrouter/sonoma-sky-alpha',
+            model: 'mistralai/mistral-7b-instruct:free',
             response_format: {type: 'json_object'},
             messages: [
                 { 
